@@ -1,0 +1,36 @@
+#!/bin/bash
+
+cp -r /usr/share/easy-rsa/3.0.*/. /root
+
+cd /root
+
+./easyrsa init-pki
+./easyrsa build-ca nopass
+./easyrsa gen-dh
+./easyrsa build-server-full server nopass
+./easyrsa build-client-full client nopass
+
+cp -f pki/ca.crt keys-server/.
+cp -f pki/private/server.key keys-server/.
+cp -f pki/issued/server.crt keys-server/.
+cp -f pki/dh.pem keys-server/.
+
+cp -f pki/ca.crt keys-client/.
+cp -f pki/private/client.key keys-client/.
+cp -f pki/issued/client.crt keys-client/.
+
+OVPN_F=keys-client/client.ovpn
+cat client-header.config > $OVPN_F
+echo -e "ca [inline]\ncert [inline]\nkey [inline]\n" >> $OVPN_F
+echo -e "<cert>" >> $OVPN_F
+cat keys-client/client.crt >> $OVPN_F
+echo -e "</cert>\n<key>" >> $OVPN_F
+cat keys-client/client.key >> $OVPN_F
+echo -e "</key>\n<ca>" >> $OVPN_F
+cat keys-client/ca.crt >> $OVPN_F
+echo -e "</ca>" >> $OVPN_F
+
+OVPN_F=keys-client/client.old.ovpn
+cat client-header.config > $OVPN_F
+echo -e "cert client.crt\nkey client.key\nca ca.crt\n" >> $OVPN_F
+

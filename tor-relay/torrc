@@ -1,0 +1,8 @@
+VirtualAddrNetwork 10.192.0.0/10
+AutomapHostsSuffixes .onion,.exit
+AutomapHostsOnResolve 1
+TransPort 9040
+TransListenAddress 0.0.0.0
+DNSPort 53
+DNSListenAddress 0.0.0.0
+
